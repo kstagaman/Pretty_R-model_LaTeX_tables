@@ -11,6 +11,9 @@ xtable.summary.lm <- function(lm.obj,
     if(!is.null(alt.factor.names)) {
         if(length(row.names(lm.xtbl)) == length(alt.factor.names)) {
             row.names(lm.xtbl) <- alt.factor.names
+        } else if(!("(Intercept)" %in% alt.factor.names)){
+            alt.factor.names <- c("(Intercept)", alt.factor.names)
+            row.names(lm.xtbl) <- alt.factor.names
         } else {
             stop("Length of alternate factor names must equal the length of the original factor names")
         }
