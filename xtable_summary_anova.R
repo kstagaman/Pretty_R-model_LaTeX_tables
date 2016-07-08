@@ -11,10 +11,10 @@ xtable.summary.anova <- function(anova.obj,
         if(length(alt.models.text) != 1) {
             stop("Alternate models text must be a single string")
         } else {
-            models.text <- alt.models.text
+            models.text <- gsub("~", "\\textasciitilde", alt.models.text, fixed=TRUE)
         }
     } else {
-        models.text <- attributes(anova.obj)$heading[2]
+        models.text <- gsub("~", "\\textasciitilde", attributes(anova.obj)$heading[2], fixed=TRUE)
     }
 
     heading.df <- data.frame("V1"=str_split(models.text, "\n")[[1]])

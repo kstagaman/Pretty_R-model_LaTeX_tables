@@ -141,7 +141,10 @@ files}\label{load-libraries-and-source-files}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(qdap)}
+\KeywordTok{library}\NormalTok{(ggfortify)}
 \KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{theme_set}\NormalTok{(}\KeywordTok{theme_bw}\NormalTok{())}
 \KeywordTok{source}\NormalTok{(}\StringTok{"../xtable_summary.R"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -151,16 +154,17 @@ line}\label{data-plot-with-regression-line}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(cars, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{speed, }\DataTypeTok{y=}\NormalTok{dist)) +}\StringTok{ }
-\StringTok{    }\KeywordTok{geom_point}\NormalTok{() +}\StringTok{ }
+\KeywordTok{ggplot}\NormalTok{(mtcars, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{disp, }\DataTypeTok{y=}\NormalTok{mpg)) +}\StringTok{ }
+\StringTok{    }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{color=}\KeywordTok{as.factor}\NormalTok{(cyl)), }\DataTypeTok{size=}\DecValTok{3}\NormalTok{) +}\StringTok{ }
+\StringTok{    }\KeywordTok{scale_color_brewer}\NormalTok{(}\DataTypeTok{name=}\StringTok{"Cylinders"}\NormalTok{, }\DataTypeTok{palette=}\StringTok{"Accent"}\NormalTok{) +}\StringTok{ }
 \StringTok{    }\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{method=}\StringTok{"lm"}\NormalTok{) +}\StringTok{ }
-\StringTok{    }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"Speed"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"Distance"}\NormalTok{)}
+\StringTok{    }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"Displacement"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"Miles per Gallon"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{example_files/figure-latex/cars_plot-1.pdf}
+\includegraphics{example_files/figure-latex/mtcars_plot-1.pdf}
 \caption{Car distance by speed with regression line}
 \end{figure}
 
@@ -168,18 +172,119 @@ line}\label{data-plot-with-regression-line}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{cars.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(dist ~}\StringTok{ }\NormalTok{speed, }\DataTypeTok{data=}\NormalTok{cars)}
-\KeywordTok{xtable.summary}\NormalTok{(}\DataTypeTok{model.obj=}\NormalTok{cars.lm, }\DataTypeTok{file.id=}\StringTok{"cars"}\NormalTok{, }\DataTypeTok{alt.factor.names=}\KeywordTok{c}\NormalTok{(}\StringTok{"Speed"}\NormalTok{))}
+\NormalTok{mtcars.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{disp*cyl, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\KeywordTok{xtable.summary}\NormalTok{(}\DataTypeTok{model.obj=}\NormalTok{mtcars.lm, }
+               \DataTypeTok{file.id=}\StringTok{"mtcars"}\NormalTok{, }
+               \DataTypeTok{alt.factor.names=}\KeywordTok{mgsub}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"disp"}\NormalTok{, }\StringTok{"cyl"}\NormalTok{), }
+                                      \KeywordTok{c}\NormalTok{(}\StringTok{"Displacement"}\NormalTok{, }\StringTok{"Cylinders"}\NormalTok{), }
+                                      \KeywordTok{attributes}\NormalTok{(mtcars.lm$terms)$term.labels))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{table}[h!]
 \captionsetup[subtable]{labelformat=empty}
 \centering
-\subfloat[]{\label{tab:cars_lm-a}{\input{cars_lm_factors}}}\quad
-\subfloat[]{\label{tab:cars_lm-b}{\input{cars_lm_rsqP}}}
-\caption{Linear model for distance by speed}
-\label{tab:cars_lm}
+\subfloat[]{\label{tab:mtcars_lm-a}{\input{mtcars_lm_factors}}}\quad
+\subfloat[]{\label{tab:mtcars_lm-b}{\input{mtcars_lm_rsqP}}}
+\caption{Linear model for Miles per Gallon by Displacement and Number of Cylinders}
+\label{tab:mtcars_lm}
+\end{table}
+
+\subsection{Factor analysis}\label{factor-analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factanal1 <-}\StringTok{ }\KeywordTok{factanal}\NormalTok{(mtcars, }\DataTypeTok{factors=}\DecValTok{1}\NormalTok{, }\DataTypeTok{scores=}\StringTok{"regression"}\NormalTok{)}
+\KeywordTok{paste}\NormalTok{(}\StringTok{"1 factor p-val:"}\NormalTok{, factanal1$PVAL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "1 factor p-val: 1.49621956585337e-17"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factanal2 <-}\StringTok{ }\KeywordTok{factanal}\NormalTok{(mtcars, }\DataTypeTok{factors=}\DecValTok{2}\NormalTok{, }\DataTypeTok{scores=}\StringTok{"regression"}\NormalTok{)}
+\KeywordTok{paste}\NormalTok{(}\StringTok{"2 factor p-val:"}\NormalTok{, factanal2$PVAL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "2 factor p-val: 0.000404750976192007"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factanal3 <-}\StringTok{ }\KeywordTok{factanal}\NormalTok{(mtcars, }\DataTypeTok{factors=}\DecValTok{3}\NormalTok{, }\DataTypeTok{scores=}\StringTok{"regression"}\NormalTok{)}
+\KeywordTok{paste}\NormalTok{(}\StringTok{"3 factor p-val:"}\NormalTok{, factanal3$PVAL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "3 factor p-val: 0.205192300877265"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{xtable.summary}\NormalTok{(}\DataTypeTok{model.obj=}\NormalTok{factanal3, }
+               \DataTypeTok{file.id=}\StringTok{"mtcars"}\NormalTok{, }
+               \DataTypeTok{cutoff=}\FloatTok{0.4}\NormalTok{, }
+               \DataTypeTok{alt.factor.names=}\KeywordTok{c}\NormalTok{(}\StringTok{"Miles/Gal"}\NormalTok{, }
+                                  \StringTok{"No. Cylinders"}\NormalTok{, }
+                                  \StringTok{"Displacement"}\NormalTok{, }
+                                  \StringTok{"Horsepower"}\NormalTok{, }
+                                  \StringTok{"Rear Axle Ratio"}\NormalTok{, }
+                                  \StringTok{"Weight"}\NormalTok{, }
+                                  \StringTok{"1/4 mile time"}\NormalTok{, }
+                                  \StringTok{"V/S"}\NormalTok{, }
+                                  \StringTok{"Transmission"}\NormalTok{, }
+                                  \StringTok{"No. Fwd Gears"}\NormalTok{, }
+                                  \StringTok{"No. Carburetors"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[h!]
+\captionsetup[subtable]{labelformat=empty}
+\centering
+\subfloat[]{\label{tab:mtcars_fa-a}{\input{mtcars_factanal_uniq}}}\quad
+\subfloat[]{\label{tab:mtcars_fa-b}{\input{mtcars_factanal_loadings}}}\quad
+\subfloat[]{\label{tab:mtcars_fa-c}{\input{mtcars_factanal_vars}}}
+\caption{Factor analysis results}
+\label{tab:mtcars_fa}
+\end{table}
+
+\subsection{Model Selection}\label{model-selection}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m0 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{cyl, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\NormalTok{m1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{cyl +}\StringTok{ }\NormalTok{disp, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\NormalTok{m2 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{cyl +}\StringTok{ }\NormalTok{disp +}\StringTok{ }\NormalTok{hp, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\NormalTok{m3 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{cyl +}\StringTok{ }\NormalTok{disp +}\StringTok{ }\NormalTok{hp +}\StringTok{ }\NormalTok{drat, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\NormalTok{m4 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(mpg ~}\StringTok{ }\NormalTok{cyl +}\StringTok{ }\NormalTok{disp +}\StringTok{ }\NormalTok{hp +}\StringTok{ }\NormalTok{drat +}\StringTok{ }\NormalTok{wt, }\DataTypeTok{data=}\NormalTok{mtcars)}
+\NormalTok{mtcars.anova <-}\StringTok{ }\KeywordTok{anova}\NormalTok{(m0, m1, m2, m3, m4)}
+\KeywordTok{xtable.summary}\NormalTok{(}\DataTypeTok{model.obj=}\NormalTok{mtcars.anova, }
+               \DataTypeTok{file.id=}\StringTok{"mtcars"}\NormalTok{,}
+               \DataTypeTok{alt.models.text=}\KeywordTok{mgsub}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"mpg"}\NormalTok{, }\StringTok{"cyl"}\NormalTok{, }\StringTok{"disp"}\NormalTok{, }\StringTok{"hp"}\NormalTok{, }\StringTok{"drat"}\NormalTok{, }\StringTok{"wt"}\NormalTok{),}
+                                     \KeywordTok{c}\NormalTok{(}\StringTok{"Miles/Gal"}\NormalTok{,}
+                                       \StringTok{"No. Cylinders"}\NormalTok{,}
+                                       \StringTok{"Displacement"}\NormalTok{,}
+                                       \StringTok{"Horsepower"}\NormalTok{,}
+                                       \StringTok{"Rear Axle Ratio"}\NormalTok{,}
+                                       \StringTok{"Weight"}\NormalTok{),}
+                                     \KeywordTok{attributes}\NormalTok{(mtcars.anova)$heading[}\DecValTok{2}\NormalTok{],}
+                                     \DataTypeTok{trim=}\OtherTok{FALSE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[h!]
+\captionsetup[subtable]{labelformat=empty}
+\centering
+\subfloat[]{\label{tab:mtcars_anova-a}{\input{mtcars_anovaHeading}}}\quad
+\subfloat[]{\label{tab:mtcars_anova-b}{\input{mtcars_anova}}}
+\caption{Model Selection for Factors Contributing to Miles per Gallon}
+\label{tab:mtcars_anova}
 \end{table}
 
 

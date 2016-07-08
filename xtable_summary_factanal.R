@@ -28,6 +28,9 @@ xtable.summary.factanal <- function(factanal.obj,
     colnames(load.text.mat) <- colnames(load.mat)
     rownames(load.text.mat) <- gsub("_", "-", rownames(load.mat))
     load.xtbl <- xtable(load.text.mat)
+    if(!is.null(alt.factor.names)) {
+        row.names(load.xtbl) <- alt.factor.names
+    }
     print(load.xtbl,
           floating=FALSE,
           file=paste(file.id, "_factanal_loadings.tex", sep=""),

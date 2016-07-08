@@ -12,32 +12,106 @@ output:
 ## Load libraries and source files
 
 ```{r libraries_and_sources, message=FALSE}
+library(qdap)
+library(ggfortify)
 library(ggplot2)
+theme_set(theme_bw())
 source("../xtable_summary.R")
 ```
 
 ## Data plot with regression line
 
-```{r cars_plot, fig.width=6, fig.heigh=3.5, fig.cap="Car distance by speed with regression line"}
-ggplot(cars, aes(x=speed, y=dist)) + 
-    geom_point() + 
+```{r mtcars_plot, fig.width=6, fig.heigh=3.5, fig.cap="Car distance by speed with regression line"}
+ggplot(mtcars, aes(x=disp, y=mpg)) + 
+    geom_point(aes(color=as.factor(cyl)), size=3) + 
+    scale_color_brewer(name="Cylinders", palette="Accent") + 
     stat_smooth(method="lm") + 
-    labs(x="Speed", y="Distance")
+    labs(x="Displacement", y="Miles per Gallon")
 ```
 
 
 ## Linear model calculation
 
-```{r car_lm}
-cars.lm <- lm(dist ~ speed, data=cars)
-xtable.summary(model.obj=cars.lm, file.id="cars", alt.factor.names=c("Speed"))
+```{r mtcars_lm}
+mtcars.lm <- lm(mpg ~ disp*cyl, data=mtcars)
+xtable.summary(model.obj=mtcars.lm, 
+               file.id="mtcars", 
+               alt.factor.names=mgsub(c("disp", "cyl"), 
+                                      c("Displacement", "Cylinders"), 
+                                      attributes(mtcars.lm$terms)$term.labels))
 ```
 
 \begin{table}[h!]
 \captionsetup[subtable]{labelformat=empty}
 \centering
-\subfloat[]{\label{tab:cars_lm-a}{\input{cars_lm_factors}}}\quad
-\subfloat[]{\label{tab:cars_lm-b}{\input{cars_lm_rsqP}}}
-\caption{Linear model for distance by speed}
-\label{tab:cars_lm}
+\subfloat[]{\label{tab:mtcars_lm-a}{\input{mtcars_lm_factors}}}\quad
+\subfloat[]{\label{tab:mtcars_lm-b}{\input{mtcars_lm_rsqP}}}
+\caption{Linear model for Miles per Gallon by Displacement and Number of Cylinders}
+\label{tab:mtcars_lm}
+\end{table}
+
+## Factor analysis
+
+```{r mtcars_factanal}
+factanal1 <- factanal(mtcars, factors=1, scores="regression")
+paste("1 factor p-val:", factanal1$PVAL)
+factanal2 <- factanal(mtcars, factors=2, scores="regression")
+paste("2 factor p-val:", factanal2$PVAL)
+factanal3 <- factanal(mtcars, factors=3, scores="regression")
+paste("3 factor p-val:", factanal3$PVAL)
+xtable.summary(model.obj=factanal3, 
+               file.id="mtcars", 
+               cutoff=0.4, 
+               alt.factor.names=c("Miles/Gal", 
+                                  "No. Cylinders", 
+                                  "Displacement", 
+                                  "Horsepower", 
+                                  "Rear Axle Ratio", 
+                                  "Weight", 
+                                  "1/4 mile time", 
+                                  "V/S", 
+                                  "Transmission", 
+                                  "No. Fwd Gears", 
+                                  "No. Carburetors"))
+```
+
+\begin{table}[h!]
+\captionsetup[subtable]{labelformat=empty}
+\centering
+\subfloat[]{\label{tab:mtcars_fa-a}{\input{mtcars_factanal_uniq}}}\quad
+\subfloat[]{\label{tab:mtcars_fa-b}{\input{mtcars_factanal_loadings}}}\quad
+\subfloat[]{\label{tab:mtcars_fa-c}{\input{mtcars_factanal_vars}}}
+\caption{Factor analysis results}
+\label{tab:mtcars_fa}
+\end{table}
+
+## Model Selection
+
+```{r}
+m0 <- lm(mpg ~ cyl, data=mtcars)
+m1 <- lm(mpg ~ cyl + disp, data=mtcars)
+m2 <- lm(mpg ~ cyl + disp + hp, data=mtcars)
+m3 <- lm(mpg ~ cyl + disp + hp + drat, data=mtcars)
+m4 <- lm(mpg ~ cyl + disp + hp + drat + wt, data=mtcars)
+mtcars.anova <- anova(m0, m1, m2, m3, m4)
+xtable.summary(model.obj=mtcars.anova, 
+               file.id="mtcars",
+               alt.models.text=mgsub(c("mpg", "cyl", "disp", "hp", "drat", "wt"),
+                                     c("Miles/Gal",
+                                       "No. Cylinders",
+                                       "Displacement",
+                                       "Horsepower",
+                                       "Rear Axle Ratio",
+                                       "Weight"),
+                                     attributes(mtcars.anova)$heading[2],
+                                     trim=FALSE))
+```
+
+\begin{table}[h!]
+\captionsetup[subtable]{labelformat=empty}
+\centering
+\subfloat[]{\label{tab:mtcars_anova-a}{\input{mtcars_anovaHeading}}}\quad
+\subfloat[]{\label{tab:mtcars_anova-b}{\input{mtcars_anova}}}
+\caption{Model Selection for Factors Contributing to Miles per Gallon}
+\label{tab:mtcars_anova}
 \end{table}
