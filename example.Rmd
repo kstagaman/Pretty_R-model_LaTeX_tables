@@ -11,15 +11,18 @@ output:
 
 ## Load libraries and source files
 
-```{r libraries_and_sources}
+```{r libraries_and_sources, message=FALSE}
 library(ggplot2)
-# source("xtable_summary.R")
+source("xtable_summary.R", chdir=TRUE)
 ```
 
 ## Data plot with regression line
 
-```{r cars_plot}
-ggplot(cars, aes(x=speed, y=dist)) + geom_point() + stat_smooth(method="lm") + labs(x="Speed", y="Distance")
+```{r cars_plot, fig.width=6, fig.heigh=3.5, fig.cap="Car distance by speed with regression line"}
+ggplot(cars, aes(x=speed, y=dist)) + 
+    geom_point() + 
+    stat_smooth(method="lm") + 
+    labs(x="Speed", y="Distance")
 ```
 
 
@@ -35,6 +38,6 @@ xtable.summary(model.obj=cars.lm, file.id="cars", alt.factor.names=c("Speed"))
 \centering
 \subfloat[]{\label{tab:cars_lm-a}{\input{cars_lm_factors}}}\quad
 \subfloat[]{\label{tab:cars_lm-b}{\input{cars_lm_rsqP}}}
-\caption{Linear model for Distance by Speed}
+\caption{Linear model for distance by speed}
 \label{tab:cars_lm}
 \end{table}

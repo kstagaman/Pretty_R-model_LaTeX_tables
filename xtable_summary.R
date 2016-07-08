@@ -1,14 +1,12 @@
 # xtable_summary.R
 
-script.dir <- dirname(sys.frame(1)$ofile)
 require(xtable)
-
-source(file.path(script.dir, "xtable_summary_lm.R"))
-source(file.path(script.dir, "xtable_summary_aov.R"))
-source(file.path(script.dir, "xtable_summary_anova.R"))
-source(file.path(script.dir, "xtable_summary_adonis.R"))
-source(file.path(script.dir, "xtable_summary_factanal.R"))
-source(file.path(script.dir, "xtable_summary_prcomp.R"))
+source("xtable_summary_lm.R")
+source("xtable_summary_aov.R")
+source("xtable_summary_anova.R")
+source("xtable_summary_adonis.R")
+source("xtable_summary_factanal.R")
+source("xtable_summary_prcomp.R")
 
 xtable.summary<- function(model.obj,
                           file.id,
