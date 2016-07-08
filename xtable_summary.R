@@ -35,7 +35,9 @@ xtable.summary<- function(model.obj,
         do.call(xtable.summary.prcomp, args)
     } else {
         obj.class <- class(model.obj)[1]
-        message(paste("Objects of class '", obj.class, "' are not yet supported by xtable.summary()",
-                   sep=""))
+        message(paste("Objects of class '",
+                      obj.class,
+                      "' are not yet supported by xtable.summary()",
+                      sep=""))
     }
 }
