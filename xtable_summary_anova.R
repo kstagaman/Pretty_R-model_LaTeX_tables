@@ -76,10 +76,10 @@ xtable.summary.anova <- function(anova.obj,
                                                    sep=""),
                                              paste(signif(anova.xtbl$`Pr(>F)`[i], 3))))
         }
-        anova.xtbl$`Pr(>F)`[2:nrow(anova.xtbl)] <- factor.pvals
-        row.names(anova.xtbl)[2:nrow(anova.xtbl)] <- factor.names
+        anova.xtbl$`Pr(>F)` <- factor.pvals
+        row.names(anova.xtbl) <- factor.names
 
-        names(anova.xtbl) <- c("Res. D.f.", "RSS", "D.f.", "Sum. of Sq.", "$F$", "Pr($>F$)")
+        names(anova.xtbl) <- c("Sum. of Sq.", "D.f.", "$F$ value", "Pr($>F$)")
         print(anova.xtbl,
               floating=FALSE,
               file=paste(file.id, "_anova.tex", sep=""),
